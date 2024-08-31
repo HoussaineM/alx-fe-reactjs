@@ -1,28 +1,25 @@
-import React, { useState } from "react";
-import useTodo from "./store/todoStore";
+import React, { useState } from 'react';
 
-export default function AddTodoForm() {
-    const [list, setList] = useState("");
-    const addList = useTodo(state => state.addTodo);
+const AddTodoForm = ({ addTodo }) => {
+    const [value, setValue] = useState('');
 
-    function handleChange(e) {
-        setList(e.target.value);
-    }
-
-    function handleSubmit(e) {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        addList(list);
-        setList("");
-    }
+        if (!value) return;
+        addTodo(value);
+        setValue('');
+    };
 
     return (
-        <form onSubmit={handleSubmit} className="form-todo">
-            <input type="text"
-                name="list"
-                value={list}
-                onChange={handleChange}
+        <form onSubmit={handleSubmit}>
+            <input
+                type="text"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
             />
-            <button type="submit">Add</button>
+            <button type="submit">Add Todo</button>
         </form>
     );
-}
+};
+
+export default AddTodoForm;

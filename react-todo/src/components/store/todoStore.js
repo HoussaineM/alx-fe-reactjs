@@ -1,27 +1,15 @@
-import { create } from "zustand";
+import React from 'react';
 
-const useTodo = create(set => (
-    {
-        todo: [],
-        addTodo: (task) => {
-            set(state => ({ todo: [...state.todo, { text: task, id: Date.now(), isHeld: false }] })
-            )
+const TodoList = ({ todos, toggleTodo }) => {
+    return (
+        <ul>
+            {todos.map((todo, index) => (
+                <li key={index} onClick={() => toggleTodo(index)}>
+                    {todo.completed ? <strike>{todo.text}</strike> : todo.text}
+                </li>
+            ))}
+        </ul>
+    );
+};
 
-        },
-        removeTodo: (id) => {
-            set(state => ({
-                todo: state.todo.filter(item => item.id !== id)
-            }));
-        },
-        checkedTodo: (id) => {
-            set(state => ({
-                todo: state.todo.map(item => (
-                    item.id === id ? { ...item, isHeld: !item.isHeld } : item
-                ))
-            }
-            ))
-        }
-    }
-));
-
-export default useTodo;
+export default TodoList;

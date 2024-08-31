@@ -1,10 +1,17 @@
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from '@testing-library/react';
+import AddTodoForm from '../components/AddTodoForm';
 
-test("adds a new todo item", () => {
-    render(<AddTodoForm />);
+test('renders AddTodoForm and adds todo', () => {
+    const addTodo = jest.fn();
 
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'New Todo' } });
-    fireEvent.click(screen.getByText('Add'));
+    render(<AddTodoForm addTodo={addTodo} />);
+    
+    const input = screen.getByRole('textbox');
+    const button = screen.getByRole('button', { name: /add todo/i });
 
-    expect(screen.getByRole('textbox')).toHaveValue('');
+    fireEvent.change(input, { target: { value: 'New Task' } });
+    fireEvent.click(button);
+
+    expect(addTodo).toHaveBeenCalledWith('New Task');
+    expect(input.value).toBe('');
 });

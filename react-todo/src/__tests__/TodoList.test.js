@@ -1,27 +1,22 @@
-import TodoList from "../components/TodoList";
-import AddTodoForm from "../components/AddTodoForm";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from '@testing-library/react';
+import TodoList from '../components/TodoList';
 
-test("renders TodoList component with initial todo", () => {
-    render(<TodoList />);
-    expect(screen.getByText("Sample Todo")).toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).not.toBeChecked();
-    expect(screen.getByText("Remove")).toBeInTheDocument();
+test('renders TodoList component', () => {
+    const todos = [{ text: 'Learn React', completed: false }];
+    render(<TodoList todos={todos} toggleTodo={() => {}} />);
+    
+    const todoItem = screen.getByText(/learn react/i);
+    expect(todoItem).toBeInTheDocument();
 });
 
-test("toggles todo completion", () => {
-    render(<TodoList />);
+test('toggles todo completion', () => {
+    const todos = [{ text: 'Learn React', completed: false }];
+    const toggleTodo = jest.fn();
 
-    const checkbox = screen.getByRole('checkbox');
-    fireEvent.click(checkbox);
+    render(<TodoList todos={todos} toggleTodo={toggleTodo} />);
+    
+    const todoItem = screen.getByText(/learn react/i);
+    fireEvent.click(todoItem);
 
-    expect(checkbox).toBeChecked();
-});
-
-test("removes a todo item", () => {
-    render(<TodoList />);
-
-    fireEvent.click(screen.getByText("Remove"));
-
-    expect(screen.queryByText("Sample Todo")).toBeNull();
+    expect(toggleTodo).toHaveBeenCalledWith(0);
 });
