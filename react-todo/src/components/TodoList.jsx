@@ -5,7 +5,7 @@ export default function TodoList() {
     const todos = useTodo(state => state.todo);
     const remove = useTodo(state => state.removeTodo);
     const check = useTodo(state => state.checkedTodo);
-    // const arr1 = ["Tomato", "Orange", "apple"];
+    // const arr1 = ["useState"]
     function removeTodo(id) {
         remove(id);
     }
