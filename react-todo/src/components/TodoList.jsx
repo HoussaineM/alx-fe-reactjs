@@ -5,14 +5,16 @@ export default function TodoList() {
     const todos = useTodo(state => state.todo);
     const remove = useTodo(state => state.removeTodo);
     const check = useTodo(state => state.checkedTodo);
-   
- function removeTodo(id) {
+    // const arr1 = ["Tomato", "Orange", "apple"];
+    function removeTodo(id) {
         remove(id);
     }
- function handleChange(id) {
+
+    function handleChange(id) {
         check(id);
     }
- return (
+
+    return (
         <div className="todo-container">
             {todos.map((item) => (
                 <li key={item.id}>
