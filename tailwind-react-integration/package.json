@@ -1,5 +1,5 @@
 {
-  "name": "alx-react-app",
+  "name": "tailwind-react-integration",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -27,3 +27,24 @@
     "vite": "^5.4.0"
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//["postcss", "autoprefixer"]
