@@ -14,4 +14,5 @@ export const fetchQuestions = async (amount, category, difficulty) => {
     const response = await axios.get(`https://opentdb.com/api.php?amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`);
     //console.log(response.data.results);
     return response.data.results;
+    
 }
