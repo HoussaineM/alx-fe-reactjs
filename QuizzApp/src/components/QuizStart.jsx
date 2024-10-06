@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCategory } from "../services/quizService";
+import { fetchCategory } from "../Services/quizService";
 import "../index.css";
 import useQuizStore from "./QuizStore";
 import { Link } from "react-router-dom";
