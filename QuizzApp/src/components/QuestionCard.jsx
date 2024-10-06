@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useQuizStore from "./QuizStore";
-import { fetchQuestions } from "../services/quizService";
+import { fetchQuestions } from "../Services/quizService";
 import "../index.css";
 
 export default function QuestionCard() {
