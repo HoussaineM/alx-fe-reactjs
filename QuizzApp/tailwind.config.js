@@ -1,20 +1,8 @@
-/** @type {import('tailwindcss').Config} 
-export default {
-  content: [],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-
-
-*/
-
-
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-  darkMode: false,
-  theme: { extend: {} },
-  variants: { extend: {} },
-  plugins: [],
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"], // Specify where Tailwind should look for classes.
+  theme: {
+    extend: {}, // Add any custom theme extensions if needed.
+  },
+  plugins: [], // Add any required plugins here.
 };

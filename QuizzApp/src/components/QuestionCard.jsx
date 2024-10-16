@@ -4,93 +4,103 @@ import { fetchQuestions } from "../Services/quizService";
 import "../index.css";
 
 export default function QuestionCard() {
-    const fetchChoices = useQuizStore(state => state.quizChoices);
-    const setQuizState = useQuizStore(state => state.setQuizState);
-    const setQuizScore = useQuizStore(state => state.setQuizScore);
-    const myQuiz = useQuizStore(state => state.myQuiz);
-    const setMyQuiz = useQuizStore(state => state.setMyQuiz);
-    const setQuizHistory = useQuizStore(state => state.setQuizHistory);
-    const quizLoader = useQuizStore(state => state.quizLoader);
-    const [currentQuestion, setCurrentQuestion] = useState({});
-    const [answerOptions, setAnswerOptions] = useState([]);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [currentAnswer, setCurrentAnswer] = useState("");
-    const [countTime, setCountTime] = useState(0);
-    const [time, setTime] = useState({});
-    const [score, setScore] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [loadError, setLoadError] = useState("");
+    // State and methods retrieved from Zustand store
+    const fetchChoices = useQuizStore(state => state.quizChoices); // Fetch user-selected quiz choices
+    const setQuizState = useQuizStore(state => state.setQuizState); // To change the quiz state, e.g., to move to score display
+    const setQuizScore = useQuizStore(state => state.setQuizScore); // Store the final quiz score
+    const myQuiz = useQuizStore(state => state.myQuiz); // Contains the quiz questions
+    const setMyQuiz = useQuizStore(state => state.setMyQuiz); // Update the quiz questions
+    const setQuizHistory = useQuizStore(state => state.setQuizHistory); // Store quiz history
+    const quizLoader = useQuizStore(state => state.quizLoader); // Boolean to check if quiz is loading
 
+    // Local state for managing current quiz state
+    const [currentQuestion, setCurrentQuestion] = useState({}); // Holds the current question object
+    const [answerOptions, setAnswerOptions] = useState([]); // Array for answer choices of the current question
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Tracks which question the user is on
+    const [currentAnswer, setCurrentAnswer] = useState(""); // Holds the selected answer
+    const [countTime, setCountTime] = useState(0); // Tracks the time spent per quiz
+    const [time, setTime] = useState({}); // Object to store hours, minutes, and seconds
+    const [score, setScore] = useState(0); // Tracks the user's score
+    const [loading, setLoading] = useState(false); // Handles loading state
+    const [loadError, setLoadError] = useState(""); // Error handling for loading quiz
+
+    // Fetch quiz questions when quiz loader is active
     useEffect(() => {
         if (quizLoader) {
-            handleFetch();
+            handleFetch(); // Calls API to fetch quiz questions
         }
     }, []);
 
+    // Handles timer for each question
     useEffect(() => {
         if (myQuiz.length > 0 && currentQuestionIndex < myQuiz.length) {
-            handleTime(countTime);
+            handleTime(countTime); // Updates the timer
             let timer = setTimeout(() => {
                 setCountTime(countTime + 1);
             }, 1000);
-            return () => clearTimeout(timer);
+            return () => clearTimeout(timer); // Clears timeout to avoid memory leaks
         }
     }, [myQuiz, countTime]);
 
+    // Moves to the score page when the quiz is completed
     useEffect(() => {
         if (myQuiz.length > 0 && currentQuestionIndex === myQuiz.length) {
-            myHistory();
-            setQuizHistory();
-            setQuizState("score");
+            myHistory(); // Store quiz result history
+            setQuizHistory(); // Set quiz history in the state
+            setQuizState("score"); // Change quiz state to show the score
         }
     }, [currentQuestionIndex]);
 
+    // Updates the current question based on the index
     useEffect(() => {
         if (myQuiz.length > 0 && currentQuestionIndex < myQuiz.length) {
             setCurrentQuestion(myQuiz[currentQuestionIndex]);
         }
     }, [myQuiz, currentQuestionIndex]);
 
+    // Randomizes the answer options and sets them for the current question
     useEffect(() => {
         if (Object.keys(currentQuestion).length > 0) {
             const randomAnswer = currentQuestion.correct_answer;
             const currentChoices = [...currentQuestion.incorrect_answers];
             const randomPosition = Math.floor(Math.random() * (currentChoices.length + 1));
-            currentChoices.splice(randomPosition, 0, randomAnswer);
-            setAnswerOptions(currentChoices);
+            currentChoices.splice(randomPosition, 0, randomAnswer); // Insert correct answer randomly
+            setAnswerOptions(currentChoices); // Set shuffled answer options
         }
     }, [currentQuestion]);
 
+    // Fetch quiz questions from API
     const handleFetch = async () => {
-        setLoading(true);
-        const amount = fetchChoices.number;
-        const difficulty = fetchChoices.difficulty;
-        const category = fetchChoices.category;
+        setLoading(true); // Set loading state to true while fetching data
+        const amount = fetchChoices.number; // Number of questions chosen by the user
+        const difficulty = fetchChoices.difficulty; // Difficulty level chosen by the user
+        const category = fetchChoices.category; // Category chosen by the user
         try {
-            const results = await fetchQuestions(amount, category, difficulty);
-            setMyQuiz(results);
+            const results = await fetchQuestions(amount, category, difficulty); // API call to fetch quiz questions
+            setMyQuiz(results); // Store the quiz data
         } catch (error) {
-            setLoadError("Failed to fetch questions.");
-            console.log(error);
+            setLoadError("Failed to fetch questions."); // Handle error if fetching fails
         } finally {
-            setLoading(false);
+            setLoading(false); // Stop the loading state once fetching is done
         }
     };
 
+    // Handle when user selects an answer
     function handleAnswer(answer) {
-        setCurrentAnswer(answer);
+        setCurrentAnswer(answer); // Update current selected answer
     }
 
+    // Store quiz results in quiz history
     function myHistory() {
-        const topicCategory = currentQuestion.category;
-        const topicLevel = currentQuestion.difficulty;
-        const str = topicLevel.charAt(0).toUpperCase() + topicLevel.slice(1).toLowerCase();
-        const topicId = Date.now();
-        const d = new Date(topicId);
-        const stringDate = d.toString();
-        const correctResponses = score;
-        const totalQuestions = myQuiz.length;
-        const topicScore = parseInt((correctResponses / totalQuestions) * 100);
+        const topicCategory = currentQuestion.category; // Get quiz category
+        const topicLevel = currentQuestion.difficulty; // Get quiz difficulty level
+        const str = topicLevel.charAt(0).toUpperCase() + topicLevel.slice(1).toLowerCase(); // Format difficulty string
+        const topicId = Date.now(); // Unique ID for quiz session based on timestamp
+        const d = new Date(topicId); 
+        const stringDate = d.toString(); // Convert date to string
+        const correctResponses = score; // Store correct answers count
+        const totalQuestions = myQuiz.length; // Total number of questions
+        const topicScore = parseInt((correctResponses / totalQuestions) * 100); // Calculate percentage score
         const topicResults = {
             id: topicId,
             topic: topicCategory,
@@ -98,12 +108,13 @@ export default function QuestionCard() {
             correct: correctResponses,
             questions: totalQuestions,
             scored: topicScore,
-            spent: time,
+            spent: time, // Time spent on the quiz
             date: stringDate,
         };
-        setQuizScore(topicResults);
+        setQuizScore(topicResults); // Store quiz score in the global state
     }
 
+    // Timer function to track time spent on each question
     function handleTime(currenttime) {
         let s = currenttime % 60;
         let m = parseInt(currenttime / 60) % 60;
@@ -116,18 +127,18 @@ export default function QuestionCard() {
             minutes: min,
             seconds: sec
         };
-
-        setTime(timeValue);
+        setTime(timeValue); // Update time state
     }
 
+    // Handle form submission to go to the next question
     function handleSubmit(e) {
         e.preventDefault();
         if (currentQuestionIndex < myQuiz.length) {
             const correctAnswer = currentQuestion.correct_answer;
             if (currentAnswer === correctAnswer) {
-                setScore(score + 1);
+                setScore(score + 1); // Increment score if the answer is correct
             }
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setCurrentQuestionIndex(currentQuestionIndex + 1); // Move to the next question
         }
     }
 
@@ -135,7 +146,7 @@ export default function QuestionCard() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
             {loading && <p className="text-blue-500">Loading questions...</p>}
             {loadError && !Object.keys(currentQuestion).length > 0 && (
-                <p className="text-red-500">{loadError}</p>
+                <p className="text-red-500">{loadError}</p> // Display error if questions fail to load
             )}
             {Object.keys(currentQuestion).length > 0 && (
                 <div className="bg-gray-800 p-6 rounded shadow-md w-full max-w-md">
@@ -178,7 +189,7 @@ export default function QuestionCard() {
                         </button>
                     </form>
                     <div className="mt-4">
-                        <p>Time: <span>{`${time.hours}:${time.minutes}:${time.seconds}`}</span></p>
+                        <p>Time: <span>{`${time.hours}:${time.minutes}:${time.seconds}`}</span></p> 
                     </div>
                 </div>
             )}
